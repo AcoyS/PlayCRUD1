@@ -1,0 +1,28 @@
+@(computerForm: Form[Computer])
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.render) } 
+
+@main {
+    
+    <h1>Tambah Data</h1>
+    
+    @form(routes.Application.save()) {
+        
+        <fieldset>
+        
+            @inputText(computerForm("name"), '_label -> "Kode barang")
+            @inputText(computerForm("introduced"), '_label -> "Nama Barang")
+            @inputText(computerForm("discontinued"), '_label -> "Deskripsi")
+
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Tambah" class="btn primary"> or 
+            <a href="@routes.Application.list()" class="btn">Cancel</a> 
+        </div>
+        
+    }
+    
+}

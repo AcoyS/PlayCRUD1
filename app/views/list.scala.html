@@ -1,0 +1,110 @@
+@(currentPage: com.avaje.ebean.Page[Computer], currentSortBy: String, currentOrder: String, currentFilter: String)
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage:Int, newSortBy:String) = @{
+    
+    var sortBy = currentSortBy
+    var order = currentOrder
+    
+    if(newSortBy != null) {
+        sortBy = newSortBy
+        if(currentSortBy == newSortBy) {
+            if(currentOrder == "asc") {
+                order = "desc"
+            } else {
+                order = "asc"
+            }
+        } else {
+            order = "asc"
+        }
+    }
+    
+    // Generate the link
+    routes.Application.list(newPage, sortBy, order, currentFilter)
+    
+}
+
+@**********************************
+* Helper generating table headers *
+***********************************@
+@header(key:String, title:String) = {
+    <th class="@key.replace(".","_") header @if(currentSortBy == key) @{if(currentOrder == "asc") "headerSortDown" else "headerSortUp"}">
+        <a href="@link(0, key)">@title</a>
+    </th>
+}
+
+@main {
+	
+    @if(flash.containsKey("success")) {
+        <div class="alert-message warning">
+            <strong>Done!</strong> @flash.get("success")
+        </div>
+    } 
+
+    <div id="actions">
+        
+        <form action="@link(0, "name")" method="GET">
+        </form>
+        
+        <a class="btn btn-success" id="add" href="@routes.Application.create()"><i class="halflings-icon white plus"></i> Tambah Produk</a>
+		<br>
+		<br>
+		<br>
+        
+    </div>
+    
+    @if(currentPage.getTotalRowCount == 0) {
+        
+        <div class="well">
+            <em>Tidak ada yang dapat ditampilkan</em>
+        </div>
+        
+    } else {
+
+	<div class="row-fluid sortable">		
+		<div class="box span12">
+			<div class="box-header" data-original-title>
+				<h2><i class="halflings-icon white user"></i><span class="break"></span>Produk</h2>
+			</div>
+			<div class="box-content">
+				<table class="table table-striped table-bordered bootstrap-datatable datatable">
+					<thead>
+						<tr>
+							@header("name", "Kode Produk")
+							@header("introduced", "Nama")
+							@header("discontinued", "Deskripsi")
+						</tr>
+					</thead>   
+					<tbody>
+						@for(computer <- currentPage.getList) {
+                    <tr>
+                        <td><a href="@routes.Application.edit(computer.id)">@computer.name</a></td>
+                        <td>
+                            @if(computer.introduced == null) {
+                                <em>-</em>
+                            } else {
+                                @computer.introduced.format("dd MMM yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if(computer.discontinued == null) {
+                                <em>-</em>
+                            } else {
+                                @computer.discontinued.format("dd MMM yyyy")
+                            }
+                        </td>
+                    </tr>
+                }	
+					</tbody>
+				</table>            
+			</div>
+		</div><!--/span-->
+	</div><!--/row-->
+        
+    }
+        
+}
+
+            
